@@ -9,8 +9,8 @@ type CheeseTypes = 'american' | 'swiss' | 'gruyere'
 type Doneness = 'rare' | 'medium' | 'well-done'
 interface HamburgerProps {
   Bun?: React.FC
+  Patty? : React.FC
   cheese: CheeseTypes
-  doneness: Doneness
   extras: Extra[]
   sauces: Sauce[]
 }
@@ -32,9 +32,10 @@ const Extras: React.FC<{which: Extra[]}> = ({ which }) => <span>{formatList(whic
 const Sauces: React.FC<{which: Sauce[]}> = ({ which }) => <span>{formatList(which)}</span>
 
 const DefaultBun = () => <Bun type={'sesame'} isToasted={true} />
-const Hamburger : React.FC<HamburgerProps> = ({ Bun = DefaultBun, cheese, doneness, extras, sauces }) => {
+const DefaultPatty = () => <Patty doneness={'medium'} />
+const Hamburger : React.FC<HamburgerProps> = ({ Bun = DefaultBun, Patty = DefaultPatty, cheese, extras, sauces }) => {
   return <span>
-    A <Patty doneness={doneness} /> on
+    A <Patty /> on
     a <Bun />
     {' '}with <Cheese type={cheese} />.
     On top, <Extras which={extras} />.
@@ -46,7 +47,6 @@ function App() {
   return (
     <Hamburger
       cheese={'american'}
-      doneness={'medium'}
       extras={['lettuce', 'onion', 'tomato']}
       sauces={['ketchup', 'mustard']}
     />
