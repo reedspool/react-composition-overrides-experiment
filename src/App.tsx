@@ -25,6 +25,7 @@ const formatList : (list : string[]) => string = (list) => {
 }
 
 const BeefPatty : React.FC<{doneness: Doneness}> = ({ doneness }) => <span>{doneness} burger</span>
+const BeetrootPatty : React.FC<{}> = () => <span>beetroot patty</span>
 const Bun : React.FC<{type: BunTypes, isToasted: IsToasted}> = ({ type, isToasted }) =>
   <span>{isToasted ? 'toasted' : 'untoasted'} {type} bun</span>
 const Cheese : React.FC<{type: CheeseTypes}> = ({ type }) => <span>{type} cheese</span>
@@ -58,7 +59,7 @@ const Sandwich : React.FC<SandwichProps> =
 
 function App() {
   return (
-    <Sandwich />
+    <Sandwich Patty={BeetrootPatty} />
   );
 }
 
