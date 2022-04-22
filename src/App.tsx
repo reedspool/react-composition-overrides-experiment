@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 type Sauce = 'ketchup' | 'mustard' | 'aioli'
