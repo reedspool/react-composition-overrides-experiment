@@ -1,6 +1,12 @@
-# Getting Started with Create React App
+# React Component Composition Override Experiment
+
+How can we make components which are extensible using normal React idioms?
+
+## Started From Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+The rest of this README is the original README from CRA.
 
 ## Available Scripts
 
