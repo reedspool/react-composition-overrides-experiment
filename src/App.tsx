@@ -4,12 +4,12 @@ import './App.css';
 
 type Sauce = 'ketchup' | 'mustard' | 'aioli'
 type Extra = 'lettuce' | 'onion' | 'tomato'
-type Bun = 'sesame' | 'plain' | 'waffle' | 'lettuce'
-type Cheese = 'american' | 'swiss' | 'gruyere'
+type BunTypes = 'sesame' | 'plain' | 'waffle' | 'lettuce'
+type CheeseTypes = 'american' | 'swiss' | 'gruyere'
 type Doneness = 'rare' | 'medium' | 'well-done'
 interface HamburgerProps {
-  bun: Bun
-  cheese: Cheese
+  bun: BunTypes
+  cheese: CheeseTypes
   doneness: Doneness
   extras: Extra[]
   sauces: Sauce[]
@@ -24,8 +24,20 @@ const formatList : (list : string[]) => string = (list) => {
   return beginning.join(", ") + " and " + end;
 }
 
+const Patty : React.FC<{doneness: Doneness}> = ({ doneness }) => <span>{doneness} burger</span>
+const Bun : React.FC<{type: BunTypes}> = ({ type }) => <span>{type} bun</span>
+const Cheese : React.FC<{type: CheeseTypes}> = ({ type }) => <span>{type} cheese</span>
+const Extras: React.FC<{which: Extra[]}> = ({ which }) => <span>{formatList(which)}</span>
+const Sauces: React.FC<{which: Sauce[]}> = ({ which }) => <span>{formatList(which)}</span>
+
 const Hamburger : React.FC<HamburgerProps> = ({ bun, cheese, doneness, extras, sauces }) => {
-  return <span>A {doneness} burger on a {bun} bun with {cheese} cheese. On top, {formatList(extras)}. A healthy amount of {formatList(sauces)}.</span>
+  return <span>
+    A <Patty doneness={doneness} /> on
+    a <Bun type={bun} />
+    {' '}with <Cheese type={cheese} />.
+    On top, <Extras which={extras} />.
+    A healthy amount of <Sauces which={sauces} />.
+  </span>
 }
 
 function App() {
