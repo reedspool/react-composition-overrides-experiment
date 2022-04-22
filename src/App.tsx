@@ -59,7 +59,17 @@ const Sandwich : React.FC<SandwichProps> =
 
 function App() {
   return (
-    <Sandwich Patty={BeetrootPatty} />
+    <ul>
+      <li><Sandwich /></li>
+      <li><Sandwich Patty={BeetrootPatty} /></li>
+      <li><Sandwich
+            Bun = { () => <span>pair of chocolate cookies</span> }
+            Patty = { () => <span>slab of vanila ice cream</span> }
+            Cheese = { () => <span>chunks of caramel</span> }
+            Extras = { () => <span>sprinkles</span> }
+            Sauces = { () => <span>chocolate drizzle</span> }
+        /></li>
+    </ul>
   );
 }
 
