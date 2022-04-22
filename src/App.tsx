@@ -8,12 +8,11 @@ type IsToasted = boolean
 type CheeseTypes = 'american' | 'swiss' | 'gruyere'
 type Doneness = 'rare' | 'medium' | 'well-done'
 interface HamburgerProps {
-  bun: BunTypes
+  Bun: React.FC
   cheese: CheeseTypes
   doneness: Doneness
   extras: Extra[]
   sauces: Sauce[]
-  isToasted: IsToasted
 }
 
 const formatList : (list : string[]) => string = (list) => {
@@ -32,10 +31,10 @@ const Cheese : React.FC<{type: CheeseTypes}> = ({ type }) => <span>{type} cheese
 const Extras: React.FC<{which: Extra[]}> = ({ which }) => <span>{formatList(which)}</span>
 const Sauces: React.FC<{which: Sauce[]}> = ({ which }) => <span>{formatList(which)}</span>
 
-const Hamburger : React.FC<HamburgerProps> = ({ bun, cheese, doneness, extras, sauces, isToasted }) => {
+const Hamburger : React.FC<HamburgerProps> = ({ Bun, cheese, doneness, extras, sauces }) => {
   return <span>
     A <Patty doneness={doneness} /> on
-    a <Bun type={bun} isToasted={isToasted} />
+    a <Bun />
     {' '}with <Cheese type={cheese} />.
     On top, <Extras which={extras} />.
     A healthy amount of <Sauces which={sauces} />.
@@ -45,12 +44,11 @@ const Hamburger : React.FC<HamburgerProps> = ({ bun, cheese, doneness, extras, s
 function App() {
   return (
     <Hamburger
-      bun={'sesame'}
+      Bun={() => <Bun type={'sesame'} isToasted={true} />}
       cheese={'american'}
       doneness={'medium'}
       extras={['lettuce', 'onion', 'tomato']}
       sauces={['ketchup', 'mustard']}
-      isToasted={true}
     />
   );
 }
