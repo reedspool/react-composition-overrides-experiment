@@ -5,6 +5,16 @@ import './App.css';
 // Utility returning promise which will resolve after n millis
 // Useful in async contexts
 const wait = (n: number) => new Promise(resolve => setTimeout(resolve, n));
+
+// Utility component to toggle DOM rendering of children
+// Usage: <Show when={true}><span>hello</span></Show>
+interface ShowProps { when: boolean }
+type ShowPropsWChildren = React.PropsWithChildren<ShowProps>
+
+const Show: React.FC<ShowPropsWChildren> = ({ when, children }) => {
+    if (when && children) return <>{children}</>;
+    return null;
+}
 type Sauce = 'ketchup' | 'mustard' | 'aioli'
 type Extra = 'lettuce' | 'onion' | 'tomato'
 type BunTypes = 'sesame' | 'plain' | 'waffle' | 'lettuce'
