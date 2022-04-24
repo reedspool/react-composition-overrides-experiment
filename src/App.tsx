@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 
 
@@ -75,6 +75,109 @@ const Sandwich: React.FC<SandwichProps> =
         </span>
     }
 
+enum COOKING_PROCESS {
+    WAITING_TO_BEGIN,
+    BEGINNING,
+    COOKING_ITEM,
+    ADDING_ITEM,
+    PAUSED,
+    READY
+}
+
+interface BaseCookingProcessProps<S extends COOKING_PROCESS> {
+    state: S
+}
+interface CookingProcessPropsWithoutItem<S extends COOKING_PROCESS> extends BaseCookingProcessProps<S> {
+    Item: typeof NullComponent
+}
+
+interface CookingProcessPropsWithItem<S extends COOKING_PROCESS> extends BaseCookingProcessProps<S> {
+    Item: React.FC
+}
+
+type CookingProcessProps =
+    CookingProcessPropsWithoutItem<COOKING_PROCESS.WAITING_TO_BEGIN> |
+    CookingProcessPropsWithoutItem<COOKING_PROCESS.BEGINNING> |
+    CookingProcessPropsWithoutItem<COOKING_PROCESS.PAUSED> |
+    CookingProcessPropsWithItem<COOKING_PROCESS.COOKING_ITEM> |
+    CookingProcessPropsWithItem<COOKING_PROCESS.ADDING_ITEM> |
+    CookingProcessPropsWithItem<COOKING_PROCESS.READY>
+
+const INITIAL_COOKING_PROCESS = {
+    state: COOKING_PROCESS.WAITING_TO_BEGIN,
+    Item: NullComponent
+};
+
+interface CookProps {
+    CookingProcess?: typeof DefaultCookingProcess
+}
+
+// TODO Can this be made generic? Can it just cook whatever single thing we pass it?
+const DefaultCookingProcess: React.FC<CookingProcessProps> = ({ Item, state }) => {
+    switch (state) {
+        case COOKING_PROCESS.WAITING_TO_BEGIN:
+            return <>Your item is waiting to begin cooking</>;
+
+        case COOKING_PROCESS.BEGINNING:
+            return <>Your item is being prepared</>;
+
+        case COOKING_PROCESS.COOKING_ITEM:
+            return <>Cooking your <Item /> now</>;
+
+        case COOKING_PROCESS.ADDING_ITEM:
+            return <>Adding <Item /> to your item.</>;
+
+        case COOKING_PROCESS.READY:
+            return <>Your item is ready! <Item /></>;
+
+        case COOKING_PROCESS.PAUSED:
+            return <>Your item is in progress but delayed</>
+    }
+};
+
+const CookableSandwich: React.FC<SandwichProps & CookProps> =
+    (
+        {
+            // Again I find myself prop drilling here.
+            // TODO Could a provider take in all these things and return a function that
+            // returns a cooking process and a sandwich component from the same ingredients?
+            Bun = DefaultBun,
+            Patty = DefaultPatty,
+            Cheese = DefaultCheese,
+            Extras = DefaultExtras,
+            Sauces = DefaultSauces,
+
+            CookingProcess = DefaultCookingProcess
+        }
+    ) => {
+        const [process, setProcess] = useState<CookingProcessProps>(INITIAL_COOKING_PROCESS);
+
+        useEffect(() => {
+            (async () => {
+                const delay = 3000;
+                await wait(delay);
+                setProcess({ state: COOKING_PROCESS.BEGINNING, Item: NullComponent });
+                await wait(delay);
+                setProcess({ state: COOKING_PROCESS.COOKING_ITEM, Item: Patty });
+                await wait(delay);
+                setProcess({ state: COOKING_PROCESS.ADDING_ITEM, Item: Cheese });
+                await wait(delay);
+                setProcess({ state: COOKING_PROCESS.ADDING_ITEM, Item: Extras });
+                await wait(delay);
+                setProcess({ state: COOKING_PROCESS.ADDING_ITEM, Item: Sauces });
+                await wait(delay);
+                setProcess({
+                    state: COOKING_PROCESS.READY,
+                    Item: () => <Sandwich Bun={Bun} Patty={Patty} Cheese={Cheese} Extras={Extras} Sauces={Sauces} />
+                });
+            })()
+        }, [])
+
+        return (<>
+            <CookingProcess {...process} /><button></button>
+        </>);
+    }
+
 function App() {
     return (
         <ul>
@@ -87,6 +190,9 @@ function App() {
                 Extras={() => <span>sprinkles</span>}
                 Sauces={() => <span>chocolate drizzle</span>}
             /></li>
+            <li>
+                <CookableSandwich />
+            </li>
         </ul>
     );
 }
