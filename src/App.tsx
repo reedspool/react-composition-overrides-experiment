@@ -1,6 +1,10 @@
 import React from 'react';
 import './App.css';
 
+
+// Utility returning promise which will resolve after n millis
+// Useful in async contexts
+const wait = (n: number) => new Promise(resolve => setTimeout(resolve, n));
 type Sauce = 'ketchup' | 'mustard' | 'aioli'
 type Extra = 'lettuce' | 'onion' | 'tomato'
 type BunTypes = 'sesame' | 'plain' | 'waffle' | 'lettuce'
