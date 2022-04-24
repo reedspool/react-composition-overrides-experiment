@@ -15,6 +15,10 @@ const Show: React.FC<ShowPropsWChildren> = ({ when, children }) => {
     if (when && children) return <>{children}</>;
     return null;
 }
+
+// Utility component for when a component is necessary but you don't want anything to render
+const NullComponent: React.FC<{}> = () => null;
+
 type Sauce = 'ketchup' | 'mustard' | 'aioli'
 type Extra = 'lettuce' | 'onion' | 'tomato'
 type BunTypes = 'sesame' | 'plain' | 'waffle' | 'lettuce'
