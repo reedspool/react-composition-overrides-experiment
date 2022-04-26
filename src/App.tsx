@@ -6,16 +6,6 @@ import './App.css';
 // Useful in async contexts
 const wait = (n: number) => new Promise(resolve => setTimeout(resolve, n));
 
-// Utility component to toggle DOM rendering of children
-// Usage: <Show when={true}><span>hello</span></Show>
-interface ShowProps { when: boolean }
-type ShowPropsWChildren = React.PropsWithChildren<ShowProps>
-
-const Show: React.FC<ShowPropsWChildren> = ({ when, children }) => {
-    if (when && children) return <>{children}</>;
-    return null;
-}
-
 // Utility component for when a component is necessary but you don't want anything to render
 const NullComponent: React.FC<{}> = () => null;
 
@@ -75,67 +65,7 @@ const Sandwich: React.FC<SandwichProps> =
         </span>
     }
 
-enum COOKING_PROCESS {
-    WAITING_TO_BEGIN,
-    BEGINNING,
-    COOKING_ITEM,
-    ADDING_ITEM,
-    PAUSED,
-    READY
-}
-
-interface BaseCookingProcessProps<S extends COOKING_PROCESS> {
-    state: S
-}
-interface CookingProcessPropsWithoutItem<S extends COOKING_PROCESS> extends BaseCookingProcessProps<S> {
-    Item: typeof NullComponent
-}
-
-interface CookingProcessPropsWithItem<S extends COOKING_PROCESS> extends BaseCookingProcessProps<S> {
-    Item: React.FC
-}
-
-type CookingProcessProps =
-    CookingProcessPropsWithoutItem<COOKING_PROCESS.WAITING_TO_BEGIN> |
-    CookingProcessPropsWithoutItem<COOKING_PROCESS.BEGINNING> |
-    CookingProcessPropsWithoutItem<COOKING_PROCESS.PAUSED> |
-    CookingProcessPropsWithItem<COOKING_PROCESS.COOKING_ITEM> |
-    CookingProcessPropsWithItem<COOKING_PROCESS.ADDING_ITEM> |
-    CookingProcessPropsWithItem<COOKING_PROCESS.READY>
-
-const INITIAL_COOKING_PROCESS = {
-    state: COOKING_PROCESS.WAITING_TO_BEGIN,
-    Item: NullComponent
-};
-
-interface CookProps {
-    CookingProcess?: typeof DefaultCookingProcess
-}
-
-// TODO Can this be made generic? Can it just cook whatever single thing we pass it?
-const DefaultCookingProcess: React.FC<CookingProcessProps> = ({ Item, state }) => {
-    switch (state) {
-        case COOKING_PROCESS.WAITING_TO_BEGIN:
-            return <>Your item is waiting to begin cooking</>;
-
-        case COOKING_PROCESS.BEGINNING:
-            return <>Your item is being prepared</>;
-
-        case COOKING_PROCESS.COOKING_ITEM:
-            return <>Cooking your <Item /> now</>;
-
-        case COOKING_PROCESS.ADDING_ITEM:
-            return <>Adding <Item /> to your item.</>;
-
-        case COOKING_PROCESS.READY:
-            return <>Your item is ready! <Item /></>;
-
-        case COOKING_PROCESS.PAUSED:
-            return <>Your item is in progress but delayed</>
-    }
-};
-
-const CookableSandwich: React.FC<SandwichProps & CookProps> =
+const CookableSandwich: React.FC<SandwichProps> =
     (
         {
             // Again I find myself prop drilling here.
@@ -146,36 +76,35 @@ const CookableSandwich: React.FC<SandwichProps & CookProps> =
             Cheese = DefaultCheese,
             Extras = DefaultExtras,
             Sauces = DefaultSauces,
-
-            CookingProcess = DefaultCookingProcess
         }
     ) => {
-        const [process, setProcess] = useState<CookingProcessProps>(INITIAL_COOKING_PROCESS);
+        const [State, setState] = useState<React.FC>(() => NullComponent);
 
         useEffect(() => {
             (async () => {
                 const delay = 3000;
+                setState(() => () => <>Your item is waiting to begin cooking</>);
                 await wait(delay);
-                setProcess({ state: COOKING_PROCESS.BEGINNING, Item: NullComponent });
+                setState(() => () => <>Your item is being prepared</>);
                 await wait(delay);
-                setProcess({ state: COOKING_PROCESS.COOKING_ITEM, Item: Patty });
+                setState(() => () => <>Cooking your <Patty /> now</>);
                 await wait(delay);
-                setProcess({ state: COOKING_PROCESS.ADDING_ITEM, Item: Cheese });
+                setState(() => () => <>Adding <Cheese /> to your item.</>);
                 await wait(delay);
-                setProcess({ state: COOKING_PROCESS.ADDING_ITEM, Item: Extras });
+                setState(() => () => <>Adding <Extras /> to your item.</>);
                 await wait(delay);
-                setProcess({ state: COOKING_PROCESS.ADDING_ITEM, Item: Sauces });
+                setState(() => () => <>Adding <Sauces /> to your item.</>);
                 await wait(delay);
-                setProcess({
-                    state: COOKING_PROCESS.READY,
-                    Item: () => <Sandwich Bun={Bun} Patty={Patty} Cheese={Cheese} Extras={Extras} Sauces={Sauces} />
-                });
+                setState(() => () =>
+                    <>
+                        Your item is ready!{' '}
+                        <Sandwich Bun={Bun} Patty={Patty} Cheese={Cheese} Extras={Extras} Sauces={Sauces} />
+                    </>);
+                await wait(delay);
             })()
         }, [])
 
-        return (<>
-            <CookingProcess {...process} /><button></button>
-        </>);
+        return <State />;
     }
 
 function App() {
