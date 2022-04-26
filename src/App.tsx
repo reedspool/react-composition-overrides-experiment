@@ -109,7 +109,7 @@ const CookableSandwich: React.FC<SandwichProps> =
 
 function App() {
     return (
-        <ul>
+        <ol>
             <li><Sandwich /></li>
             <li><Sandwich Patty={BeetrootPatty} /></li>
             <li><Sandwich
@@ -122,7 +122,7 @@ function App() {
             <li>
                 <CookableSandwich />
             </li>
-        </ul>
+        </ol>
     );
 }
 
