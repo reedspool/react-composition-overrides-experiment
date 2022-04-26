@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import './App.css';
+import { Span } from './BasicComponents';
+import { LocalPagination, Pagination, PaginationAnchor } from './Pagination';
+import { withBoundProps, withDefaultProps } from './PropsUtilities';
 
 
 // Utility returning promise which will resolve after n millis
@@ -107,6 +110,25 @@ const CookableSandwich: React.FC<SandwichProps> =
         return <State />;
     }
 
+const MyPagination: typeof Pagination = ({ ...rest }) => {
+    return <Pagination Target={PaginationAnchor} {...rest} />
+}
+
+const MyParentComponent: React.FC<React.PropsWithChildren<{
+    Child?: React.FC<React.PropsWithChildren<any>>
+}>> = ({ Child = Span, ...rest }) => {
+    return <Child {...rest} />
+}
+
+const MyParentComponentFactory: (Child: React.FC) => React.FC<React.PropsWithChildren<any>> =
+    (Child) => {
+        return (props) => <MyParentComponent Child={Child} {...props} />
+    }
+
+const MyGeneratedParentComponent = MyParentComponentFactory(Span);
+
+const MyGeneratedGenericComponent = withBoundProps(MyParentComponent, { Child: Span });
+
 function App() {
     return (
         <ol>
@@ -121,6 +143,42 @@ function App() {
             /></li>
             <li>
                 <CookableSandwich />
+            </li>
+            <li>
+                <LocalPagination
+                    total={3}
+                    onPageChange={(page) => { console.log(`page changed to ${page}`) }}
+                />
+            </li>
+            <li>
+                <LocalPagination
+                    total={3}
+                    onPageChange={(page) => { console.log(`page changed to ${page}`) }}
+                    Pagination={MyPagination}
+                />
+            </li>
+            <li>
+                <LocalPagination
+                    total={3}
+                    onPageChange={(page) => { console.log(`page changed to ${page}`) }}
+                    Pagination={withBoundProps(Pagination, { Target: PaginationAnchor })}
+                />
+            </li>
+            <li>
+                <LocalPagination
+                    total={3}
+                    onPageChange={(page) => { console.log(`page changed to ${page}`) }}
+                    Pagination={withDefaultProps(Pagination, { Target: PaginationAnchor })}
+                />
+            </li>
+            <li>
+                <MyParentComponent>Test</MyParentComponent>
+            </li>
+            <li>
+                <MyGeneratedParentComponent>Test</MyGeneratedParentComponent>
+            </li>
+            <li>
+                <MyGeneratedGenericComponent>Test</MyGeneratedGenericComponent>
             </li>
         </ol>
     );
